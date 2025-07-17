@@ -1,7 +1,6 @@
 # Fast Log Analyzer
 
 [![CI/CD Pipeline](https://github.com/kasra-dr/rust-log-analyzer/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/kasra-dr/rust-log-analyzer/actions/workflows/rust-ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A high-performance command-line tool written in Rust for parsing and summarizing web server access logs. It provides quick insights into traffic patterns, status codes, and top visitors directly from the terminal.
 
