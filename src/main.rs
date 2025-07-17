@@ -71,24 +71,22 @@ where
     let reader = io::BufReader::new(file);
 
     for content in reader.lines().flatten() {
-        if let Ok(content) = line {
-            analysis.line_count += 1;
+        analysis.line_count += 1;
 
-            // If the line matches our Regex pattern
-            if let Some(captures) = re.captures(&content) {
-                // Extract IP address
-                if let Some(ip) = captures.name("ip") {
-                    *analysis.top_ips.entry(ip.as_str().to_string()).or_insert(0) += 1;
-                }
+        // If the line matches our Regex pattern
+        if let Some(captures) = re.captures(&content) {
+            // Extract IP address
+            if let Some(ip) = captures.name("ip") {
+                *analysis.top_ips.entry(ip.as_str().to_string()).or_insert(0) += 1;
+            }
 
-                // Extract Status Code
-                if let Some(status_str) = captures.name("status") {
-                    if let Ok(status_code) = status_str.as_str().parse::<u16>() {
-                        *analysis.status_codes.entry(status_code).or_insert(0) += 1;
+            // Extract Status Code
+            if let Some(status_str) = captures.name("status") {
+                if let Ok(status_code) = status_str.as_str().parse::<u16>() {
+                    *analysis.status_codes.entry(status_code).or_insert(0) += 1;
                     }
                 }
             }
         }
-    }
     Ok(())
 }
