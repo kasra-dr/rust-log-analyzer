@@ -29,12 +29,12 @@ impl LogAnalysis {
 
         println!("\nHTTP Status Code Counts:");
         for (code, count) in &self.status_codes {
-            println!(" - {}: {}", code, count);
+            println!(" - {code}: {count}");
         }
        
         println!("\nTop 5 IP Addresses:");
         for (ip, count) in self.top_ips.iter().take(5) {
-            println!(" - {}: {} requests", ip, count);
+            println!(" - {ip}: {count} requests");
         }
     }
 }
@@ -46,7 +46,7 @@ fn main() {
         println!("Usage: log_analyzer <path_to_logfile>");
     } else {
         let log_file_path = &args[1];
-        println!("Analyzing file: {}", log_file_path);
+        println!("Analyzing file: {log_file_path}");
 
         let mut analysis = LogAnalysis::new();
 
@@ -54,7 +54,7 @@ fn main() {
         let re = Regex::new(r#"(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) - - \[(?P<timestamp>[^\]]+)\] "(?P<method>\w+) (?P<url>[^\s]+) [^"]+" (?P<status>\d{3}) .*"#).unwrap();
 
         if let Err(e) = read_and_analyze_lines(log_file_path, &mut analysis, &re) {
-            eprintln!("Error reading file: {}", e);
+            eprintln!("Error reading file: {e}");
         } else {
             analysis.print_summary();
         }
@@ -70,7 +70,7 @@ where
     let file = File::open(filename)?;
     let reader = io::BufReader::new(file);
 
-    for line in reader.lines() {
+    for content in reader.lines().flatten() {
         if let Ok(content) = line {
             analysis.line_count += 1;
 
