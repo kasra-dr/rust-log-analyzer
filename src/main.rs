@@ -1,44 +1,75 @@
+use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+// A struct to hold our analysis results
+struct LogAnalysis {
+    line_count: u32,
+    log_levels: HashMap<String, u32>,
+}
+
+impl LogAnalysis {
+    // Creates a new, empty analysis instance
+    fn new() -> Self {
+        LogAnalysis {
+            line_count: 0,
+            log_levels: HashMap::new(),
+        }
+    }
+
+    // Prints the final summary
+    fn print_summary(&self) {
+        println!("\n--- Analysis Summary ---");
+        println!("Total lines processed: {}", self.line_count);
+        println!("\nLog level counts:");
+        for (level, count) in &self.log_levels {
+            println!("  - {}: {}", level, count);
+        }
+        println!("----------------------");
+    }
+}
+
 fn main() {
-    // Collects command line arguments into a vector
     let args: Vec<String> = env::args().collect();
 
-    // Check whether the argument was given to the program or not
     if args.len() < 2 {
-        // If no arguments were given, print a help message
         println!("Usage: log_analyzer <path_to_logfile>");
-        println!("Analyzes a log file and provides a summary.");
     } else {
-        // If there is an argument, treat it as a filename    
         let log_file_path = &args[1];
         println!("Analyzing file: {}", log_file_path);
-        println!("---------------------------------");
 
-        // Call new function to read file
-        if let Err(e) = read_lines(log_file_path) { 
+        let mut analysis = LogAnalysis::new();
+
+        if let Err(e) = read_and_analyze_lines(log_file_path, &mut analysis) {
             eprintln!("Error reading file: {}", e);
+        } else {
+            analysis.print_summary();
         }
     }
 }
 
-// 'read_line' function takes a file path and reads it line by line
-fn read_lines<P>(filename: P) -> io::Result<()>
-where P: AsRef<Path>, {
-    // Open the file
+// This function reads and analyzes the file line by line
+// The return type is correctly defined as io::Result<()>
+fn read_and_analyze_lines<P>(filename: P, analysis: &mut LogAnalysis) -> io::Result<()>
+where
+    P: AsRef<Path>,
+{
     let file = File::open(filename)?;
-
-    // Create a buffer for optimal reading
     let reader = io::BufReader::new(file);
 
-    // Iterate over each line of the file and print it
     for line in reader.lines() {
-        // Line by line Checking file
         if let Ok(content) = line {
-            println!("{}", content);
+            analysis.line_count += 1;
+
+            if content.contains("INFO") {
+                *analysis.log_levels.entry("INFO".to_string()).or_insert(0) += 1;
+            } else if content.contains("WARNING") {
+                *analysis.log_levels.entry("WARNING".to_string()).or_insert(0) += 1;
+            } else if content.contains("ERROR") {
+                *analysis.log_levels.entry("ERROR".to_string()).or_insert(0) += 1;
+            }
         }
     }
     Ok(())
