@@ -70,7 +70,7 @@ where
     let file = File::open(filename)?;
     let reader = io::BufReader::new(file);
 
-    for content in reader.lines().flatten() {
+    for content in reader.lines().map_while(Result::ok) {
         analysis.line_count += 1;
 
         // If the line matches our Regex pattern
