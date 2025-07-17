@@ -13,7 +13,7 @@ struct LogAnalysis {
 }
 
 impl LogAnalysis {
-    // Creates a new, empty analysis instance
+    // Creates a new and empty analysis instance
     fn new() -> Self {
         LogAnalysis {
             line_count: 0,
